@@ -57,6 +57,9 @@
   .note { font-size: 15px; color: var(--muted); }
   .kicker { color: var(--amber-deep); margin-bottom: 8px; }
   esp-web-install-button:not(:defined) span[slot] { display: none; }
+  .check { margin-top: 22px; border: 2px solid var(--amber); background: #fffaf2; border-radius: 14px; padding: 16px 18px; }
+  .check h3 { margin: 0 0 6px; font-size: 20px; }
+  .check p { margin: 0; }
   .phone-hint { display: none; background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
   .phone-hint strong { font-family: var(--mono); font-weight: 600; }
   @media (hover: none) and (pointer: coarse) { .phone-hint { display: block; } }
@@ -154,11 +157,85 @@
 
 <main>
 
+<section id="build">
+  <div class="wrap">
+    <p class="label kicker">Steps 1 to 6</p>
+    <h2>Build it</h2>
+    <p class="intro">About an hour. Four solder joints and twelve screws. Before you start: the iron gets 350 °C hot, so always put it back in its stand, and open a window. Your new sensor will notice the solder smoke too.</p>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-head"><span class="num">1</span><h3>Cut and strip the cable</h3></div>
+        <div class="body">
+          <p>Cut the cable 10 cm from the white plug. You don't need the black plugs.</p>
+          <p>Strip 3 mm from each wire, twist the strands and tin them with a little solder.</p>
+        </div>
+        <figure><img src="img/s1_cut.png" width="892" height="215" alt="The sensor cable with a cut line 10 cm from the white plug."></figure>
+        <figure><img src="img/s1_strip.png" width="855" height="103" alt="A wire end: strip 3 mm, twist, tin."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">2</span><h3>Find out which wire is which</h3></div>
+        <div class="body">
+          <p>Plug the white plug into <strong>CN1</strong> on the back of the screen board and leave it there. The pin names are printed next to CN1. Follow each wire and note its colour.</p>
+          <table>
+            <thead><tr><th>CN1 pin</th><th>Colour</th><th>Sensor pin</th></tr></thead>
+            <tbody>
+              <tr><td class="pin">3.3V</td><td class="fill">your colour</td><td class="pin">VCC</td></tr>
+              <tr><td class="pin">GND</td><td class="fill">your colour</td><td class="pin">GND</td></tr>
+              <tr><td class="pin">IO22</td><td class="fill">your colour</td><td class="pin">SCL</td></tr>
+              <tr><td class="pin">IO27</td><td class="fill">your colour</td><td class="pin">SDA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <figure><img src="img/s3_cn1.png" width="729" height="636" alt="The back of the screen board with the white plug going into CN1 on the lower edge."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">3</span><h3>Solder the sensor</h3></div>
+        <div class="body">
+          <p>Push each wire through its hole from the side with the parts. Solder it on the flat side, then cut off what sticks out. SDO and CS stay empty.</p>
+          <p class="tip">Tip: 350 °C with the chisel tip. Heat the pad and the wire for 1 to 2 seconds, then add the solder.</p>
+        </div>
+        <figure><img src="img/s2_solder.png" width="344" height="436" alt="The sensor board with four wires in the holes VCC, GND, SCL and SDA. SDO and CS stay empty."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">4</span><h3>Screen board into the front</h3></div>
+        <div class="body">
+          <p>Lay the front case face down on a soft towel. Put the board in with the screen down and the USB port at the side opening. The white plug sits in the small pocket under the board.</p>
+          <p>Fix it with the 4 screws from SCREEN (4 mm) and the small screwdriver. Snug, not tight.</p>
+        </div>
+        <figure><img src="img/s4_board.png" width="700" height="631" alt="The board going into the front case, screen down, with four 4 mm screws."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">5</span><h3>Sensor into its own room</h3></div>
+        <div class="body">
+          <p>Lay the sensor into the T-shaped pocket in the lower room: chip up, pins towards the wire slot. It only fits one way. Fix it with the 2 screws from SENSOR (4 mm), snug, not tight. Lay the wires into the slot.</p>
+          <p class="tip">A small piece of paper tape over the slot keeps the warm air from the board away from the sensor. No Kapton tape and no silicone near the sensor: they can damage it for good.</p>
+        </div>
+        <figure><img src="img/s5_sensor.png" width="1100" height="711" alt="The sensor in its T-shaped pocket in the lower room, two 4 mm screws going into its holes, the wires in the slot to the plug in CN1."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">6</span><h3>Base and feet</h3></div>
+        <div class="body">
+          <p>Stand the case on the base, front edges flush. Fix it from below with the 2 screws from BASE (8 mm). The lid stays off for now.</p>
+          <p>Then press the 4 rubber feet into the 4 round pockets under the base. They keep it from sliding when you tap the screen.</p>
+        </div>
+        <figure><img src="img/s7_feet.png" width="738" height="551" alt="The underside of the base: two 8 mm screws going up into the case, four clear rubber feet in round pockets in the corners."></figure>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section id="start">
   <div class="wrap">
-    <p class="label kicker">Step 1</p>
+    <p class="label kicker">Step 7</p>
     <h2>Bring it to life</h2>
-    <p class="intro">Do this first, before any soldering: it tests the board. You need a laptop and a USB cable that carries data. Pick one of two ways.</p>
+    <p class="intro">The case stands on its base and the lid is still off. Plug a USB cable that carries data into the side and into a laptop. Pick one of two ways.</p>
     <p class="phone-hint">You are on a phone. Open this page on a laptop: <strong>remustoma.github.io/bobr-air</strong></p>
     <div class="options">
 
@@ -182,8 +259,8 @@ claude</code></pre><button class="copy" type="button">Copy</button></div>
           <li>Connect the board and say: <q>Flash the starter and check my hardware.</q></li>
         </ol>
         <figure>
-          <img src="img/ui_starter_nosensor.png" width="1280" height="960" alt="The starter on the screen: Hej Szymon, Screen OK, Sensor Not found, Touch: tap the screen.">
-          <figcaption>Before soldering, <em>Sensor: Not found</em> is correct. Your own software comes after the build: see <a href="#own">Make it yours</a>.</figcaption>
+          <img src="img/ui_starter_ok.png" width="1280" height="960" alt="The starter: Screen OK, Sensor OK, BME680 at 0x77, Touch OK, 22.6 °C, 47 %, 1013 hPa.">
+          <figcaption>The starter says <em>Sensor OK</em> and shows your first numbers. Then build your own: see <a href="#own">Make it yours</a>.</figcaption>
         </figure>
       </article>
 
@@ -216,105 +293,33 @@ claude</code></pre><button class="copy" type="button">Copy</button></div>
             </esp-web-install-button>
           </div>
         </div>
-        <p class="note">When it's done, the screen shows the bóbr and then <em>No sensor</em>. That's correct: the sensor comes next. If the screen stays white or the colours look strange, install again with the other button.</p>
+        <p class="note">When it's done, the screen shows the bóbr, then your first numbers, and air quality says <em>Starting</em>. If the screen stays white or the colours look strange, install again with the other button.</p>
       </article>
 
+    </div>
+    <div class="check">
+      <h3>Check before you close the lid</h3>
+      <p>The starter says <em>Sensor OK</em>, or BÓBR AIR shows numbers. <em>Not found</em> or <em>No sensor</em>? Check the four joints and your colour table now, while the lid is off. Then unplug USB.</p>
     </div>
   </div>
 </section>
 
-<section id="build">
+<section id="finish">
   <div class="wrap">
-    <p class="label kicker">Steps 2 to 10</p>
-    <h2>Build it</h2>
-    <p class="intro">About an hour. Four solder joints and twelve screws. Before you start: the iron gets 350 °C hot, so always put it back in its stand, and open a window. Your new sensor will notice the solder smoke too.</p>
+    <p class="label kicker">Steps 8 and 9</p>
+    <h2>Close it up</h2>
 
     <div class="steps">
-      <article class="step">
-        <div class="step-head"><span class="num">2</span><h3>Cut and strip the cable</h3></div>
-        <div class="body">
-          <p>Cut the cable 10 cm from the white plug. You don't need the black plugs.</p>
-          <p>Strip 3 mm from each wire, twist the strands and tin them with a little solder.</p>
-        </div>
-        <figure><img src="img/s1_cut.png" width="892" height="215" alt="The sensor cable with a cut line 10 cm from the white plug."></figure>
-        <figure><img src="img/s1_strip.png" width="855" height="103" alt="A wire end: strip 3 mm, twist, tin."></figure>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">3</span><h3>Find out which wire is which</h3></div>
-        <div class="body">
-          <p>Plug the white plug into <strong>CN1</strong> on the back of the screen board and leave it there. The pin names are printed next to CN1. Follow each wire and note its colour.</p>
-          <table>
-            <thead><tr><th>CN1 pin</th><th>Colour</th><th>Sensor pin</th></tr></thead>
-            <tbody>
-              <tr><td class="pin">3.3V</td><td class="fill">your colour</td><td class="pin">VCC</td></tr>
-              <tr><td class="pin">GND</td><td class="fill">your colour</td><td class="pin">GND</td></tr>
-              <tr><td class="pin">IO22</td><td class="fill">your colour</td><td class="pin">SCL</td></tr>
-              <tr><td class="pin">IO27</td><td class="fill">your colour</td><td class="pin">SDA</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <figure><img src="img/s3_cn1.png" width="729" height="636" alt="The back of the screen board with the white plug going into CN1 on the lower edge."></figure>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">4</span><h3>Solder the sensor</h3></div>
-        <div class="body">
-          <p>Push each wire through its hole from the side with the parts. Solder it on the flat side, then cut off what sticks out. SDO and CS stay empty.</p>
-          <p class="tip">Tip: 350 °C with the chisel tip. Heat the pad and the wire for 1 to 2 seconds, then add the solder.</p>
-        </div>
-        <figure><img src="img/s2_solder.png" width="344" height="436" alt="The sensor board with four wires in the holes VCC, GND, SCL and SDA. SDO and CS stay empty."></figure>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">5</span><h3>Quick test</h3></div>
-        <div class="body">
-          <p>Connect the board to USB again. The starter now says <em>Sensor OK</em> and shows your first numbers. BÓBR AIR shows the numbers, and air quality says <em>Starting</em>.</p>
-          <p>Still <em>Not found</em> or <em>No sensor</em>? Check the four joints and your colour table. Then unplug USB.</p>
-        </div>
-        <div class="duo">
-          <figure><img src="img/ui_starter_ok.png" width="1280" height="960" alt="The starter: Screen OK, Sensor OK, BME680 at 0x77, Touch OK, 22.6 °C, 47 %, 1013 hPa."><figcaption>Option 1: the starter</figcaption></figure>
-          <figure><img src="img/ui_learning.png" width="1280" height="960" alt="BÓBR AIR during the first minutes: values on top, air quality says Starting, learning the room."><figcaption>Option 2: BÓBR AIR</figcaption></figure>
-        </div>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">6</span><h3>Screen board into the front</h3></div>
-        <div class="body">
-          <p>Lay the front case face down on a soft towel. Put the board in with the screen down and the USB port at the side opening. The white plug sits in the small pocket under the board.</p>
-          <p>Fix it with the 4 screws from SCREEN (4 mm) and the small screwdriver. Snug, not tight.</p>
-        </div>
-        <figure><img src="img/s4_board.png" width="700" height="631" alt="The board going into the front case, screen down, with four 4 mm screws."></figure>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">7</span><h3>Sensor into its own room</h3></div>
-        <div class="body">
-          <p>Lay the sensor into the T-shaped pocket in the lower room: chip up, pins towards the wire slot. It only fits one way. Fix it with the 2 screws from SENSOR (4 mm), snug, not tight. Lay the wires into the slot.</p>
-          <p class="tip">A small piece of paper tape over the slot keeps the warm air from the board away from the sensor. No Kapton tape and no silicone near the sensor: they can damage it for good.</p>
-        </div>
-        <figure><img src="img/s5_sensor.png" width="1100" height="711" alt="The sensor in its T-shaped pocket in the lower room, two 4 mm screws going into its holes, the wires in the slot to the plug in CN1."></figure>
-      </article>
-
       <article class="step split">
         <div class="step-head"><span class="num">8</span><h3>Close the lid</h3></div>
         <div class="body">
-          <p>Put the lid on with your name outside. Fix it with the 4 screws from LID (6 mm). Their heads sink into the lid.</p>
+          <p>Unplug USB. Put the lid on with your name outside. Fix it with the 4 screws from LID (6 mm). Their heads sink into the lid.</p>
         </div>
         <figure><img src="img/s6_lid.png" width="741" height="675" alt="The lid with the name SZYMON going onto the back with four 6 mm screws."></figure>
       </article>
 
       <article class="step split">
-        <div class="step-head"><span class="num">9</span><h3>Base and feet</h3></div>
-        <div class="body">
-          <p>Stand the case on the base, front edges flush. Fix it from below with the 2 screws from BASE (8 mm).</p>
-          <p>Then press the 4 rubber feet into the 4 round pockets under the base. They keep it from sliding when you tap the screen.</p>
-        </div>
-        <figure><img src="img/s7_feet.png" width="738" height="570" alt="The underside of the base: two 8 mm screws going up into the case, four clear rubber feet in round pockets in the corners."></figure>
-      </article>
-
-      <article class="step split">
-        <div class="step-head"><span class="num">10</span><h3>Switch it on</h3></div>
+        <div class="step-head"><span class="num">9</span><h3>Switch it on</h3></div>
         <div class="body">
           <p>Plug the angled cable into the side, cable pointing back, and into any USB charger.</p>
           <p class="tip">Board with two USB ports: use a USB-A to USB-C cable and a USB-A charger.</p>
