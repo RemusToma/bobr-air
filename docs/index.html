@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BÓBR AIR · build guide</title>
+<meta name="description" content="BÓBR AIR: a desk climate station Szymon builds and programs himself. Write the software with Claude, or install the finished one in the browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  :root {
+    --ink: #1d1b18; --muted: #5f5a53; --line: #e3ded5; --paper: #ffffff; --soft: #f6f3ee;
+    --amber: #f2a93b; --amber-deep: #b86a10; --brown: #7a4e2b;
+    --display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+    --body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'IBM Plex Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--body); }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--brown); }
+  a:hover { color: #4f3018; }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.05; margin: 0; text-wrap: balance; }
+  p { margin: 0; text-wrap: pretty; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+  .label { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* hero */
+  .hero { background: var(--amber); padding: 28px 0 0; overflow: hidden; }
+  .hero .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hero h1 { font-size: clamp(56px, 13vw, 112px); font-weight: 800; letter-spacing: -0.03em; margin-top: 28px; }
+  .hero .lede { font-size: clamp(19px, 3.6vw, 23px); font-weight: 500; max-width: 30ch; margin-top: 12px; }
+  .hero img { width: min(620px, 100%); margin: 18px auto -6px; }
+  .logo { width: 30px; height: 33px; color: var(--ink); }
+
+  section { padding: 56px 0 8px; }
+  section > .wrap > h2 { font-size: clamp(32px, 6vw, 44px); font-weight: 800; letter-spacing: -0.02em; }
+  section > .wrap > .intro { color: var(--muted); margin-top: 10px; max-width: 60ch; }
+
+  /* install */
+  .install { background: var(--soft); border-radius: 18px; padding: 24px; margin-top: 24px; display: grid; gap: 18px; }
+  .install ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+  .boards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 14px; }
+  .board { background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+  .board h3 { font-size: 22px; font-weight: 750; }
+  .board p { color: var(--muted); font-size: 15px; }
+  .btn { appearance: none; border: 0; cursor: pointer; background: var(--ink); color: #fff; font: 600 17px/1 var(--body);
+         padding: 15px 20px; border-radius: 12px; min-height: 48px; width: 100%; }
+  .btn:hover { background: #3a362f; }
+  a.btn { display: inline-block; width: auto; text-decoration: none; padding: 15px 22px; border-radius: 12px; color: #fff; }
+  a.btn:hover { color: #fff; }
+  .guide-link { margin: 18px 0 4px; }
+  .btn:focus-visible { outline: 3px solid var(--amber-deep); outline-offset: 2px; }
+  .note { font-size: 15px; color: var(--muted); }
+  .kicker { color: var(--amber-deep); margin-bottom: 8px; }
+  esp-web-install-button:not(:defined) span[slot] { display: none; }
+  .phone-hint { display: none; background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
+  .phone-hint strong { font-family: var(--mono); font-weight: 600; }
+  @media (hover: none) and (pointer: coarse) { .phone-hint { display: block; } }
+
+  /* two options */
+  .options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 24px; }
+  .option { min-width: 0; border: 1.5px solid var(--line); border-radius: 18px; padding: clamp(16px, 4vw, 22px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; }
+  ol.cmds li { min-width: 0; }
+  .cmds .sub { margin-top: 8px; font-size: 15px; color: var(--muted); }
+  .option.rec { border: 2.5px solid var(--amber); background: #fffaf2; }
+  .option h3 { font-size: 26px; font-weight: 750; letter-spacing: -0.01em; }
+  .badge { display: inline-block; justify-self: start; border-radius: 999px; padding: 6px 10px; background: var(--soft); color: var(--muted); }
+  .option.rec .badge { background: var(--amber); color: var(--ink); }
+  .option > p:not(.badge):not(.note) { max-width: 62ch; }
+  ol.cmds { margin: 0; padding-left: 22px; display: grid; gap: 12px; }
+  ol.cmds li::marker { font-family: var(--mono); font-weight: 600; color: var(--amber-deep); }
+  .code { position: relative; margin-top: 8px; }
+  .code pre { margin: 0; background: var(--ink); color: #f3efe7; border-radius: 10px; padding: 12px 14px; padding-right: 64px;
+              font: 500 14px/1.6 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .code pre code { background: none; padding: 0; border-radius: 0; color: inherit; font: inherit; }
+  .copy { position: absolute; top: 8px; right: 8px; appearance: none; border: 0; cursor: pointer; border-radius: 7px;
+          background: #3a362f; color: #f3efe7; font: 600 12px/1 var(--mono); padding: 7px 9px; min-height: 28px; }
+  .copy:hover { background: #4b463d; }
+  q { font-weight: 600; }
+  .option figure { margin: 0; display: grid; gap: 6px; }
+  .option figure img { border-radius: 10px; border: 6px solid #14171b; width: 100%; max-width: 360px; }
+  .option figcaption { font-size: 14px; color: var(--muted); }
+  .prompts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 12px; margin-top: 22px; }
+  .prompt { margin: 0; background: var(--soft); border-radius: 14px; padding: 16px 18px; font-weight: 500; }
+  .prompt::before { content: "\201C"; display: block; font: 800 34px/0.6 var(--display); color: var(--amber-deep); margin-bottom: 4px; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 12px; }
+  .duo figure { padding: 10px; }
+  .duo figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; text-align: center; }
+
+  /* steps */
+  .steps { display: grid; gap: 40px; margin-top: 30px; }
+  .step { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .step-head { display: flex; align-items: center; gap: 12px; }
+  .num { flex: none; width: 36px; height: 36px; border-radius: 9px; background: var(--ink); color: #fff;
+         display: grid; place-items: center; font: 800 19px/1 var(--display); }
+  .step h3 { font-size: 26px; font-weight: 750; letter-spacing: -0.01em; }
+  .step .body { display: grid; gap: 10px; }
+  .step figure { margin: 0; background: var(--soft); border-radius: 14px; padding: 14px; }
+  .step figure img { margin: 0 auto; max-height: 360px; width: auto; }
+  .tip { border-top: 1.5px solid var(--line); padding-top: 10px; font-size: 15px; color: var(--muted); }
+  @media (min-width: 720px) {
+    .step.split { grid-template-columns: 1fr 1fr; align-items: start; }
+    .step.split .step-head { grid-column: 1 / -1; }
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 16px; }
+  th, td { border-bottom: 1.5px solid var(--line); padding: 9px 8px; text-align: left; }
+  th { font: 600 13px/1.2 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  td.pin { font-family: var(--mono); font-weight: 600; }
+  td.fill { color: #b3ada4; }
+
+  /* screen */
+  .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; margin-top: 24px; }
+  .screens figure { margin: 0; }
+  .screens img { border-radius: 10px; border: 6px solid #14171b; }
+  .screens figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .scale { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 8px; }
+  .scale li { display: grid; grid-template-columns: 18px 120px 1fr; gap: 10px; align-items: center; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; }
+  .scale .range { font-family: var(--mono); font-weight: 600; font-size: 15px; }
+
+  .faq { display: grid; gap: 10px; margin-top: 22px; }
+  details { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+  summary { cursor: pointer; font-weight: 600; min-height: 28px; }
+  details p { margin-top: 8px; color: var(--muted); }
+
+  ul.plain { padding-left: 20px; display: grid; gap: 6px; margin: 16px 0 0; }
+  code { font-family: var(--mono); font-size: .92em; background: var(--soft); padding: 1px 5px; border-radius: 5px; }
+
+  footer { margin-top: 64px; background: var(--ink); color: #f3efe7; padding: 40px 0 48px; }
+  footer .wrap { display: grid; gap: 14px; }
+  footer .big { font: 800 clamp(26px, 5vw, 36px)/1.1 var(--display); max-width: 22ch; }
+  footer .small { font: 500 13px/1.5 var(--mono); color: #c9c3b8; }
+  footer .logo { color: var(--amber); width: 40px; height: 44px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <span class="label">Build kit 01 / 01</span>
+      <svg class="logo" viewBox="4 0 92 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M66.1 99.9 L68.2 99.8 L70.3 99.5 L72.5 99.2 L74.7 98.8 L76.9 98.3 L79.0 97.7 L81.1 97.0 L83.1 96.3 L85.0 95.5 L86.8 94.7 L88.4 93.8 L89.9 92.9 L91.3 92.0 L92.4 91.0 L93.4 90.1 L94.2 89.1 L94.7 88.2 L95.1 87.2 L95.2 86.3 L95.2 85.5 L94.9 84.6 L94.4 83.9 L93.7 83.2 L92.8 82.5 L91.7 82.0 L90.4 81.5 L88.9 81.1 L87.3 80.8 L85.6 80.5 L83.7 80.4 L81.8 80.4 L79.7 80.4 L77.6 80.6 L75.4 80.8 L73.3 81.2 L71.1 81.6 L68.9 82.1 L67.1 82.6 L67.1 82.3 L67.0 81.7 L66.8 81.2 L66.5 80.6 L66.1 80.1 L65.6 79.7 L65.0 79.3 L64.4 79.0 L63.7 78.8 L63.1 78.6 L63.8 77.0 L64.6 74.3 L65.2 71.5 L65.5 68.7 L65.7 65.9 L65.5 63.0 L65.2 60.2 L64.6 57.5 L63.8 54.8 L62.7 52.2 L61.5 49.8 L60.0 47.5 L58.4 45.4 L56.6 43.5 L54.6 41.8 L54.3 41.6 L54.4 40.1 L54.3 37.9 L54.0 35.9 L53.6 33.8 L53.0 31.9 L52.2 30.0 L51.3 28.2 L50.2 26.6 L49.0 25.1 L47.6 23.7 L46.2 22.5 L44.6 21.5 L44.0 21.2 L44.3 20.4 L44.7 19.1 L44.9 17.7 L45.0 16.2 L44.9 14.8 L44.7 13.4 L44.3 12.0 L43.8 10.7 L43.1 9.4 L42.5 8.4 L42.9 8.2 L43.2 8.0 L43.6 7.7 L43.9 7.4 L44.2 7.1 L44.4 6.8 L44.7 6.4 L44.8 6.0 L45.0 5.6 L45.1 5.2 L45.2 4.8 L45.2 4.3 L45.2 3.9 L45.1 3.5 L45.0 3.1 L44.8 2.7 L44.7 2.3 L44.4 1.9 L44.2 1.6 L43.9 1.3 L43.6 1.0 L43.2 0.7 L42.9 0.5 L42.5 0.3 L42.1 0.2 L41.7 0.1 L41.3 0.0 L40.8 0.0 L40.4 0.0 L40.0 0.1 L39.6 0.2 L39.2 0.3 L38.8 0.5 L38.4 0.7 L38.1 1.0 L37.8 1.3 L37.5 1.6 L37.2 1.9 L37.0 2.3 L36.8 2.7 L36.7 3.1 L36.6 3.4 L35.4 2.9 L34.0 2.4 L32.5 2.0 L31.0 1.8 L29.5 1.8 L27.9 1.8 L26.4 2.0 L25.0 2.4 L23.5 2.9 L22.1 3.5 L20.8 4.2 L19.6 5.0 L18.5 6.0 L17.5 7.0 L16.6 7.0 L15.6 7.1 L14.6 7.2 L13.6 7.4 L12.7 7.6 L11.7 7.9 L10.8 8.3 L9.9 8.7 L9.0 9.1 L8.2 9.6 L7.5 10.2 L6.9 10.7 L6.3 11.3 L5.8 12.0 L5.4 12.6 L5.1 13.2 L4.9 13.9 L4.8 14.5 L4.8 15.2 L4.9 15.8 L5.0 16.4 L5.3 17.0 L5.7 17.5 L6.1 18.0 L6.4 17.9 L7.4 17.7 L8.4 17.5 L9.4 17.3 L10.5 17.2 L11.6 17.1 L12.7 17.0 L13.8 16.9 L14.9 16.9 L16.0 16.9 L17.1 16.9 L18.1 16.9 L19.0 17.0 L20.0 17.1 L20.8 17.3 L21.6 17.4 L22.2 17.6 L22.8 17.8 L23.3 18.0 L23.7 18.3 L24.0 18.5 L24.2 18.8 L24.3 19.1 L24.2 19.4 L24.1 19.6 L23.8 19.9 L23.5 20.2 L23.0 20.5 L22.5 20.8 L21.8 21.1 L21.1 21.3 L20.3 21.6 L19.4 21.8 L18.4 22.0 L17.4 22.2 L16.4 22.4 L15.3 22.5 L14.2 22.7 L13.1 22.7 L12.0 22.8 L10.9 22.8 L9.8 22.9 L9.8 23.0 L10.0 23.5 L10.2 23.9 L10.4 24.4 L10.8 24.9 L11.2 25.4 L11.7 25.9 L12.3 26.4 L12.9 26.9 L13.5 27.3 L14.2 27.7 L15.0 28.1 L15.7 28.5 L16.5 28.9 L17.3 29.2 L18.1 29.4 L19.0 29.7 L19.8 29.8 L20.2 29.9 L19.2 31.8 L18.4 33.7 L17.8 35.7 L17.3 37.8 L17.1 39.2 L16.4 39.7 L15.5 40.5 L14.6 41.2 L13.8 42.0 L13.0 42.8 L12.4 43.5 L11.8 44.3 L11.2 45.1 L10.8 45.8 L10.5 46.5 L10.2 47.2 L10.1 47.9 L10.0 48.5 L10.0 49.0 L10.2 49.5 L10.4 50.0 L10.7 50.3 L11.1 50.6 L11.7 50.8 L12.2 51.0 L12.9 51.1 L13.6 51.1 L14.4 51.0 L15.3 50.8 L16.2 50.6 L17.1 50.3 L18.1 49.9 L18.2 49.9 L18.3 50.3 L19.1 52.0 L18.9 52.2 L17.9 54.8 L17.1 57.5 L16.5 60.2 L16.1 63.0 L16.0 65.9 L16.1 68.7 L16.5 71.5 L17.1 74.3 L17.9 77.0 L18.9 79.5 L20.2 82.0 L21.6 84.3 L23.3 86.4 L25.1 88.3 L27.0 90.0 L27.4 90.2 L27.0 90.2 L25.6 90.3 L24.2 90.4 L22.9 90.5 L21.6 90.7 L20.4 90.9 L19.2 91.1 L18.2 91.4 L17.2 91.7 L16.4 92.0 L15.7 92.4 L15.0 92.7 L14.6 93.1 L14.2 93.5 L14.0 93.9 L13.9 94.3 L14.0 94.7 L14.2 95.1 L14.6 95.5 L15.0 95.9 L15.7 96.3 L16.4 96.6 L17.2 96.9 L18.2 97.2 L19.2 97.5 L20.4 97.8 L21.6 98.0 L22.9 98.1 L24.2 98.3 L25.6 98.4 L27.0 98.4 L28.4 98.5 L29.8 98.4 L31.2 98.4 L32.6 98.3 L34.0 98.1 L35.2 98.0 L36.5 97.8 L37.6 97.5 L38.7 97.2 L39.6 96.9 L40.5 96.6 L41.2 96.3 L41.8 95.9 L42.3 95.5 L42.6 95.1 L42.8 94.7 L43.3 94.7 L45.7 94.3 L48.0 93.6 L50.3 92.6 L51.0 92.3 L50.7 93.1 L50.6 94.1 L50.6 94.9 L50.9 95.7 L51.4 96.5 L52.1 97.2 L53.0 97.8 L54.1 98.4 L55.4 98.9 L56.8 99.3 L58.4 99.6 L60.2 99.8 L62.0 100.0 L64.0 100.0ZM28.1 13.6 L27.8 13.6 L27.4 13.5 L27.1 13.4 L26.8 13.2 L26.5 13.1 L26.3 12.9 L26.0 12.7 L25.8 12.4 L25.6 12.1 L25.4 11.8 L25.3 11.5 L25.2 11.2 L25.1 10.9 L25.0 10.6 L25.0 10.2 L25.0 9.9 L25.1 9.6 L25.2 9.2 L25.3 8.9 L25.4 8.6 L25.6 8.3 L25.8 8.1 L26.0 7.8 L26.3 7.6 L26.5 7.4 L26.8 7.2 L27.1 7.1 L27.4 7.0 L27.8 6.9 L28.1 6.8 L28.4 6.8 L28.8 6.8 L29.1 6.9 L29.4 7.0 L29.7 7.1 L30.0 7.2 L30.3 7.4 L30.6 7.6 L30.8 7.8 L31.1 8.1 L31.3 8.3 L31.4 8.6 L31.6 8.9 L31.7 9.2 L31.8 9.6 L31.8 9.9 L31.8 10.2 L31.8 10.6 L31.8 10.9 L31.7 11.2 L31.6 11.5 L31.4 11.8 L31.3 12.1 L31.1 12.4 L30.8 12.7 L30.6 12.9 L30.3 13.1 L30.0 13.2 L29.7 13.4 L29.4 13.5 L29.1 13.6 L28.8 13.6 L28.4 13.7Z"/></svg>
+    </div>
+    <h1>BÓBR AIR</h1>
+    <p class="lede">A desk climate station you build and program yourself. Made for Szymon. Sto lat!</p>
+    <p class="guide-link"><a class="btn" href="bobr-air-guide.pdf">Build guide (PDF, 12 pages)</a></p>
+    <img src="img/hero.png" width="1137" height="926" alt="The finished BÓBR AIR: a dark desk stand with a 2.8 inch screen showing 22.4 °C, humidity, pressure and air quality, with a brown bóbr on the front.">
+  </div>
+</header>
+
+<main>
+
+<section id="start">
+  <div class="wrap">
+    <p class="label kicker">Step 1</p>
+    <h2>Bring it to life</h2>
+    <p class="intro">Do this first, before any soldering: it tests the board. You need a laptop and a USB cable that carries data. Pick one of two ways.</p>
+    <p class="phone-hint">You are on a phone. Open this page on a laptop: <strong>remustoma.github.io/bobr-air</strong></p>
+    <div class="options">
+
+      <article class="option rec" id="claude">
+        <p class="label badge">Option 1 · Recommended</p>
+        <h3>Write your own software with Claude</h3>
+        <p>Claude Code knows this board: the pins, the screen, the sensor and how to flash it. You say what you want, Claude writes the code, flashes it and reads the board's log.</p>
+        <ol class="cmds">
+          <li>Install Claude Code. It needs a paid Claude plan.
+            <p class="sub">macOS and Linux:</p>
+            <div class="code"><pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre><button class="copy" type="button">Copy</button></div>
+            <p class="sub">Windows, in PowerShell:</p>
+            <div class="code"><pre><code>irm https://claude.ai/install.ps1 | iex</code></pre><button class="copy" type="button">Copy</button></div>
+            <p class="sub">Other ways, and the desktop app: <a href="https://code.claude.com/docs/en/setup">code.claude.com/docs/en/setup</a></p>
+          </li>
+          <li>Get the starter kit and start Claude in it:
+            <div class="code"><pre><code>git clone https://github.com/remustoma/bobr-air
+cd bobr-air
+claude</code></pre><button class="copy" type="button">Copy</button></div>
+          </li>
+          <li>Connect the board and say: <q>Flash the starter and check my hardware.</q></li>
+        </ol>
+        <figure>
+          <img src="img/ui_starter_nosensor.png" width="1280" height="960" alt="The starter on the screen: Hej Szymon, Screen OK, Sensor Not found, Touch: tap the screen.">
+          <figcaption>Before soldering, <em>Sensor: Not found</em> is correct. Your own software comes after the build: see <a href="#own">Make it yours</a>.</figcaption>
+        </figure>
+      </article>
+
+      <article class="option" id="install">
+        <p class="label badge">Option 2 · No code</p>
+        <h3>Install the finished BÓBR AIR</h3>
+        <p>Two minutes in the browser. This is also the way back if your own software goes wrong: it replaces everything on the board.</p>
+        <ol class="cmds">
+          <li>Use <strong>Chrome</strong> or <strong>Edge</strong> on a laptop. Safari and Firefox can't talk to USB.</li>
+          <li>Connect the screen board. Two USB ports? Use the micro-USB port, or a USB-A to USB-C cable.</li>
+          <li>Click the button for your board, choose the port in the list, wait about a minute.</li>
+        </ol>
+        <div class="boards">
+          <div class="board">
+            <h3>One USB port</h3>
+            <p>The original Cheap Yellow Display.</p>
+            <esp-web-install-button manifest="firmware/manifest-cyd.json">
+              <button slot="activate" class="btn">Install for 1 USB port</button>
+              <span slot="unsupported" class="note">This browser can't install. Use Chrome or Edge on a laptop.</span>
+              <span slot="not-allowed" class="note">The installer only works on the https address of this page.</span>
+            </esp-web-install-button>
+          </div>
+          <div class="board">
+            <h3>Two USB ports</h3>
+            <p>Micro-USB and USB-C. USB-C to USB-C cables don't work on this board.</p>
+            <esp-web-install-button manifest="firmware/manifest-cyd2usb.json">
+              <button slot="activate" class="btn">Install for 2 USB ports</button>
+              <span slot="unsupported" class="note">This browser can't install. Use Chrome or Edge on a laptop.</span>
+              <span slot="not-allowed" class="note">The installer only works on the https address of this page.</span>
+            </esp-web-install-button>
+          </div>
+        </div>
+        <p class="note">When it's done, the screen shows the bóbr and then <em>No sensor</em>. That's correct: the sensor comes next. If the screen stays white or the colours look strange, install again with the other button.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="build">
+  <div class="wrap">
+    <p class="label kicker">Steps 2 to 10</p>
+    <h2>Build it</h2>
+    <p class="intro">About an hour. Four solder joints and twelve screws. Before you start: the iron gets 350 °C hot, so always put it back in its stand, and open a window. Your new sensor will notice the solder smoke too.</p>
+
+    <div class="steps">
+      <article class="step">
+        <div class="step-head"><span class="num">2</span><h3>Cut and strip the cable</h3></div>
+        <div class="body">
+          <p>Cut the cable 10 cm from the white plug. You don't need the black plugs.</p>
+          <p>Strip 3 mm from each wire, twist the strands and tin them with a little solder.</p>
+        </div>
+        <figure><img src="img/s1_cut.png" width="892" height="215" alt="The sensor cable with a cut line 10 cm from the white plug."></figure>
+        <figure><img src="img/s1_strip.png" width="855" height="103" alt="A wire end: strip 3 mm, twist, tin."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">3</span><h3>Find out which wire is which</h3></div>
+        <div class="body">
+          <p>Plug the white plug into <strong>CN1</strong> on the back of the screen board and leave it there. The pin names are printed next to CN1. Follow each wire and note its colour.</p>
+          <table>
+            <thead><tr><th>CN1 pin</th><th>Colour</th><th>Sensor pin</th></tr></thead>
+            <tbody>
+              <tr><td class="pin">3.3V</td><td class="fill">your colour</td><td class="pin">VCC</td></tr>
+              <tr><td class="pin">GND</td><td class="fill">your colour</td><td class="pin">GND</td></tr>
+              <tr><td class="pin">IO22</td><td class="fill">your colour</td><td class="pin">SCL</td></tr>
+              <tr><td class="pin">IO27</td><td class="fill">your colour</td><td class="pin">SDA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <figure><img src="img/s3_cn1.png" width="729" height="636" alt="The back of the screen board with the white plug going into CN1 on the lower edge."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">4</span><h3>Solder the sensor</h3></div>
+        <div class="body">
+          <p>Push each wire through its hole from the side with the parts. Solder it on the flat side, then cut off what sticks out. SDO and CS stay empty.</p>
+          <p class="tip">Tip: 350 °C with the chisel tip. Heat the pad and the wire for 1 to 2 seconds, then add the solder.</p>
+        </div>
+        <figure><img src="img/s2_solder.png" width="344" height="436" alt="The sensor board with four wires in the holes VCC, GND, SCL and SDA. SDO and CS stay empty."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">5</span><h3>Quick test</h3></div>
+        <div class="body">
+          <p>Connect the board to USB again. The starter now says <em>Sensor OK</em> and shows your first numbers. BÓBR AIR shows the numbers, and air quality says <em>Starting</em>.</p>
+          <p>Still <em>Not found</em> or <em>No sensor</em>? Check the four joints and your colour table. Then unplug USB.</p>
+        </div>
+        <div class="duo">
+          <figure><img src="img/ui_starter_ok.png" width="1280" height="960" alt="The starter: Screen OK, Sensor OK, BME680 at 0x77, Touch OK, 22.6 °C, 47 %, 1013 hPa."><figcaption>Option 1: the starter</figcaption></figure>
+          <figure><img src="img/ui_learning.png" width="1280" height="960" alt="BÓBR AIR during the first minutes: values on top, air quality says Starting, learning the room."><figcaption>Option 2: BÓBR AIR</figcaption></figure>
+        </div>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">6</span><h3>Screen board into the front</h3></div>
+        <div class="body">
+          <p>Lay the front case face down on a soft towel. Put the board in with the screen down and the USB port at the side opening. The white plug sits in the small pocket under the board.</p>
+          <p>Fix it with the 4 screws from SCREEN (4 mm) and the small screwdriver. Snug, not tight.</p>
+        </div>
+        <figure><img src="img/s4_board.png" width="700" height="631" alt="The board going into the front case, screen down, with four 4 mm screws."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">7</span><h3>Sensor into its own room</h3></div>
+        <div class="body">
+          <p>Lay the sensor into the T-shaped pocket in the lower room: chip up, pins towards the wire slot. It only fits one way. Fix it with the 2 screws from SENSOR (4 mm), snug, not tight. Lay the wires into the slot.</p>
+          <p class="tip">A small piece of paper tape over the slot keeps the warm air from the board away from the sensor. No Kapton tape and no silicone near the sensor: they can damage it for good.</p>
+        </div>
+        <figure><img src="img/s5_sensor.png" width="1100" height="711" alt="The sensor in its T-shaped pocket in the lower room, two 4 mm screws going into its holes, the wires in the slot to the plug in CN1."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">8</span><h3>Close the lid</h3></div>
+        <div class="body">
+          <p>Put the lid on with your name outside. Fix it with the 4 screws from LID (6 mm). Their heads sink into the lid.</p>
+        </div>
+        <figure><img src="img/s6_lid.png" width="741" height="675" alt="The lid with the name SZYMON going onto the back with four 6 mm screws."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">9</span><h3>Base and feet</h3></div>
+        <div class="body">
+          <p>Stand the case on the base, front edges flush. Fix it from below with the 2 screws from BASE (8 mm).</p>
+          <p>Then press the 4 rubber feet into the 4 round pockets under the base. They keep it from sliding when you tap the screen.</p>
+        </div>
+        <figure><img src="img/s7_feet.png" width="738" height="570" alt="The underside of the base: two 8 mm screws going up into the case, four clear rubber feet in round pockets in the corners."></figure>
+      </article>
+
+      <article class="step split">
+        <div class="step-head"><span class="num">10</span><h3>Switch it on</h3></div>
+        <div class="body">
+          <p>Plug the angled cable into the side, cable pointing back, and into any USB charger.</p>
+          <p class="tip">Board with two USB ports: use a USB-A to USB-C cable and a USB-A charger.</p>
+        </div>
+        <figure><img src="img/s8_usb.png" width="1009" height="643" alt="The finished station with the angled USB cable on the side, running back along the desk."></figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="own">
+  <div class="wrap">
+    <p class="label kicker">Option 1</p>
+    <h2>Make it yours</h2>
+    <p class="intro">The hardware is done, the software is yours. Open Claude in the kit folder and say what you want, in your own words. Some ideas to start:</p>
+    <div class="prompts">
+      <p class="prompt">Show temperature, humidity and air quality, big and easy to read, with a colour for the air.</p>
+      <p class="prompt">Count my weeks. I was born on [date]. Show the weeks I've lived, out of 5,218.</p>
+      <p class="prompt">Make the bóbr speak Polish.</p>
+      <p class="prompt">Show the outdoor temperature next to the indoor one.</p>
+      <p class="prompt">Draw a 24 hour chart of the air quality.</p>
+      <p class="prompt">Dim the screen at night with the light sensor.</p>
+    </div>
+    <ul class="plain">
+      <li>Claude can't see the screen. Tell it what you see, or paste a photo.</li>
+      <li>When something works, say <q>commit this</q>. Then you can always go back.</li>
+      <li>The kit is on GitHub: <a href="https://github.com/remustoma/bobr-air">github.com/remustoma/bobr-air</a>. <code>CLAUDE.md</code> has the hardware notes Claude reads. Other AI tools work too: they read <code>AGENTS.md</code>.</li>
+      <li>Broke it? <a href="#install">Install BÓBR AIR</a> and you are back at the start.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="screen">
+  <div class="wrap">
+    <p class="label kicker">Option 2</p>
+    <h2>Reading the BÓBR AIR screen</h2>
+    <p class="intro">Temperature, humidity and pressure are right from the start. Air quality needs time: for the first two days the value moves a lot while the sensor burns in and learns your room. Until it is sure, it says <em>still learning</em>.</p>
+    <div class="screens">
+      <figure><img src="img/ui_good.png" width="1280" height="960" alt="Screen: 22.4 °C, 48 % humidity, 1013 hPa, air quality Good, IAQ 42."><figcaption>All good.</figcaption></figure>
+      <figure><img src="img/ui_stuffy.png" width="1280" height="960" alt="Screen: air quality Stuffy, IAQ 182, the bóbr says Open a window."><figcaption>Stuffy: the bóbr wants fresh air.</figcaption></figure>
+      <figure><img src="img/ui_bad.png" width="1280" height="960" alt="Screen: air quality Bad, IAQ 236, the bóbr says Time for a walk."><figcaption>Bad: close the laptop, go outside.</figcaption></figure>
+    </div>
+    <ul class="scale" aria-label="Air quality scale">
+      <li><span class="dot" style="background:#62c478"></span><span class="range">0 to 50</span><span>Good</span></li>
+      <li><span class="dot" style="background:#a0ce60"></span><span class="range">51 to 100</span><span>Fine</span></li>
+      <li><span class="dot" style="background:#e8b240"></span><span class="range">101 to 150</span><span>Stale</span></li>
+      <li><span class="dot" style="background:#ec8c3c"></span><span class="range">151 to 200</span><span>Stuffy. The bóbr: <em>Open a window!</em></span></li>
+      <li><span class="dot" style="background:#e25c48"></span><span class="range">over 200</span><span>Bad. The bóbr: <em>Time for a walk!</em></span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="help">
+  <div class="wrap">
+    <h2>If something is wrong</h2>
+    <div class="faq">
+      <details><summary>The Install button does nothing, or there is no port in the list</summary>
+        <p>Use Chrome or Edge on a laptop and try another USB cable: many only charge. On Windows the board may need the CH340 USB driver.</p></details>
+      <details><summary>The two-port board stays dark on USB-C</summary>
+        <p>Its USB-C port only works with a USB-A to USB-C cable. USB-C to USB-C cables don't work on this board. The micro-USB port works with any data cable.</p></details>
+      <details><summary>Claude can't upload to the board</summary>
+        <p>Hold the BOOT button on the board while it says <em>Connecting</em>. Try another USB cable: many only charge. On Windows the board may need the CH340 USB driver.</p></details>
+      <details><summary>The screen is white or the colours look strange</summary>
+        <p>The software for the other board type is on it. BÓBR AIR: install again with the other button. Your own software: tell Claude if your board has one or two USB ports.</p></details>
+      <details><summary>The picture is upside down</summary>
+        <p>BÓBR AIR: hold a finger on the screen for 3 seconds. It turns by 180 degrees and remembers it. Your own software: ask Claude to turn the picture.</p></details>
+      <details><summary>It says No sensor or Not found</summary>
+        <p>Check the four solder joints and compare the colours with your table. It looks for the sensor again every few seconds.</p></details>
+      <details><summary>My own software shows nothing</summary>
+        <p>Install BÓBR AIR with option 2. If it works, the hardware is fine and the problem is in the code. Tell Claude what you see.</p></details>
+      <details><summary>The temperature looks a bit high</summary>
+        <p>Give it 30 minutes after switching on, keep it out of the sun and away from the laptop's warm air.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="know">
+  <div class="wrap">
+    <h2>Good to know</h2>
+    <ul class="plain">
+      <li>Put it where you sit, away from sun, heaters and open windows. Keep the vents free.</li>
+      <li>No silicone near the sensor. Silicone glue, sealant or Kapton tape can damage it for good.</li>
+      <li>BÓBR AIR saves what it learned every 6 hours, so unplugging is fine.</li>
+      <li>Brain: ESP32. Sensor: Bosch BME680 on I2C, <code>SDA = IO27</code>, <code>SCL = IO22</code>. <code>IO21</code> is the screen light. All the details are in <a href="https://github.com/remustoma/bobr-air/blob/main/CLAUDE.md">CLAUDE.md</a>.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <svg class="logo" viewBox="4 0 92 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M66.1 99.9 L72.5 99.2 L79.0 97.7 L85.0 95.5 L89.9 92.9 L93.4 90.1 L95.1 87.2 L94.9 84.6 L92.8 82.5 L88.9 81.1 L83.7 80.4 L77.6 80.6 L71.1 81.6 L67.1 82.6 L66.8 81.2 L65.6 79.7 L63.7 78.8 L63.8 77.0 L65.2 71.5 L65.7 65.9 L65.2 60.2 L63.8 54.8 L61.5 49.8 L58.4 45.4 L54.6 41.8 L54.4 40.1 L54.0 35.9 L53.0 31.9 L51.3 28.2 L49.0 25.1 L46.2 22.5 L44.0 21.2 L44.7 19.1 L45.0 16.2 L44.7 13.4 L43.8 10.7 L42.5 8.4 L43.6 7.7 L44.4 6.8 L45.0 5.6 L45.2 4.3 L45.0 3.1 L44.4 1.9 L43.6 1.0 L42.5 0.3 L41.3 0.0 L40.0 0.1 L38.8 0.5 L37.8 1.3 L37.0 2.3 L36.6 3.4 L34.0 2.4 L31.0 1.8 L27.9 1.8 L25.0 2.4 L22.1 3.5 L19.6 5.0 L17.5 7.0 L15.6 7.1 L12.7 7.6 L9.9 8.7 L7.5 10.2 L5.8 12.0 L4.9 13.9 L4.9 15.8 L5.7 17.5 L6.4 17.9 L9.4 17.3 L12.7 17.0 L16.0 16.9 L19.0 17.0 L21.6 17.4 L23.3 18.0 L24.2 18.8 L24.2 19.4 L23.5 20.2 L21.8 21.1 L19.4 21.8 L16.4 22.4 L13.1 22.7 L9.8 22.9 L10.2 23.9 L11.2 25.4 L12.9 26.9 L15.0 28.1 L17.3 29.2 L19.8 29.8 L19.2 31.8 L17.8 35.7 L17.1 39.2 L15.5 40.5 L13.8 42.0 L12.4 43.5 L11.2 45.1 L10.5 46.5 L10.1 47.9 L10.0 49.0 L10.4 50.0 L11.1 50.6 L12.2 51.0 L13.6 51.1 L15.3 50.8 L17.1 50.3 L18.2 49.9 L19.1 52.0 L17.9 54.8 L16.5 60.2 L16.0 65.9 L16.5 71.5 L17.9 77.0 L20.2 82.0 L23.3 86.4 L27.0 90.0 L27.0 90.2 L24.2 90.4 L21.6 90.7 L19.2 91.1 L17.2 91.7 L15.7 92.4 L14.6 93.1 L14.0 93.9 L14.0 94.7 L14.6 95.5 L15.7 96.3 L17.2 96.9 L19.2 97.5 L21.6 98.0 L24.2 98.3 L27.0 98.4 L29.8 98.4 L32.6 98.3 L35.2 98.0 L37.6 97.5 L39.6 96.9 L41.2 96.3 L42.3 95.5 L42.8 94.7 L45.7 94.3 L50.3 92.6 L51.0 92.3 L50.6 94.1 L50.9 95.7 L52.1 97.2 L54.1 98.4 L56.8 99.3 L60.2 99.8 L64.0 100.0ZM28.1 13.6 L27.1 13.4 L26.3 12.9 L25.6 12.1 L25.2 11.2 L25.0 10.2 L25.1 9.6 L25.4 8.6 L26.0 7.8 L26.8 7.2 L27.8 6.9 L28.8 6.8 L29.7 7.1 L30.6 7.6 L31.3 8.3 L31.7 9.2 L31.8 10.2 L31.8 10.9 L31.4 11.8 L30.8 12.7 L30.0 13.2 L29.1 13.6Z"/></svg>
+    <p class="big">4,000 weeks is the average. Sto lat is 5,218. Spend some of them outside.</p>
+    <p class="small">BÓBR AIR · Kit 01/01 · Designed by Remus, built and coded by Szymon · October 2026</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var text = b.parentElement.querySelector('code').innerText;
+      var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, function () {}); }
+      else { var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select();
+             try { document.execCommand('copy'); done(); } catch (e) {} document.body.removeChild(t); }
+    });
+  });
+</script>
+</body>
+</html>
